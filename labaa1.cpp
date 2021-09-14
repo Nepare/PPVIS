@@ -7,7 +7,7 @@ using namespace std;
 class cNode //класс узла
 {
     cNode* left, * right; //указатели на потомков
-    string eng, rus; 
+    string eng, rus, nullpoint = "Элемент не найден"; 
 
 public:
     cNode(string eng1, string rus1) //конструктор
@@ -25,6 +25,14 @@ public:
     {
         return rus;
     }
+    string& get_rus_element()
+    {
+        return rus;
+    }
+    string& nullpointer()
+    {
+        return nullpoint;
+    } //вспомогательный элемент, именно его адрес мы возвращаем в функции find_node()
     cNode* get_left()
     {
         return left;
@@ -87,12 +95,12 @@ private:
             }
         }
     }
-    void find_node(cNode* t, string eng1)
+    string& find_node(cNode* t, string eng1)
     {
-        if (t == nullptr) { cout << endl << "Элемент не найден!" << endl; return; }
-        if (eng1 == t->get_eng()) cout << endl << t->get_eng() << ": " << t->get_rus();
-        if (eng1 < t->get_eng()) find_node(t->get_left(), eng1);
-        if (eng1 > t->get_eng()) find_node(t->get_right(), eng1);
+        if (t == nullptr) { return root->nullpointer(); }
+        if (eng1 == t->get_eng()) return t->get_rus_element();
+        if (eng1 < t->get_eng()) return find_node(t->get_left(), eng1);
+        if (eng1 > t->get_eng()) return find_node(t->get_right(), eng1);
     }
     cNode* delete_node(cNode* node, string eng1)
     {
@@ -145,7 +153,12 @@ public:
     }
     void get_translation(string e1)
     {
-        find_node(root, e1);
+        if (find_node(root, e1) == "0") cout << "Элемент не найден";
+        else 
+        {
+            string r1 = find_node(root, e1);
+            cout << e1 << ":" << r1 << endl;
+        }
     }
     void remove_translation(string e1)
     {
@@ -155,21 +168,28 @@ public:
     {
         cout << root->get_eng() << " " << root->get_rus();
     }
+
+    string& operator[] (string e1)  { return find_node(root, e1); }
+    void operator-= (string e1) { this->remove_translation(e1); }
+    void operator+= (pair<string,string> e1) { this->set_translation(e1.first,e1.second); }
 };
+
 
 int main()
 {
     setlocale(LC_ALL, "ru");
     dict *slov = new dict();
 
-    slov->set_translation("hello","привет");
-    slov->set_translation("hi", "дарова");
-    slov->set_translation("pain", "боль");
+    (*slov) += make_pair("hello","привет");
+    (*slov) += make_pair("hi", "добро пожаловать");
+    (*slov) += make_pair("bread", "хлеб");
 
-    slov->get_translation("hello");
-    slov->get_translation("hi");
-    slov->remove_translation("hi");
-    slov->get_translation("hi");
+    cout << (*slov)["hello"] << endl;
+    cout << (*slov)["hi"] << endl;
+    (*slov)["hi"] = "шарнир";
+    cout << (*slov)["hi"] << endl;
+    (*slov) -= "hi";
+    cout << (*slov)["hi"] << endl;
     //slov->test();
 
 }
