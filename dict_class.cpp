@@ -1,0 +1,179 @@
+#include "dict_class.h"
+
+using namespace std;
+
+    void dict::add_node(cNode* node, string eng_inp, string rus_inp) {
+        if (!root) {
+            cNode* t = new cNode(eng_inp, rus_inp);
+            root = t;       // если корневой элемент не создан, то мы выделяем под него память и привязываем к нему указатель корня root
+        }               
+        else {
+            cNode* prev, * t;
+            bool find = true;       // find - это проверка на то, что в дереве ещё нет такого элемента
+            t = node; prev = t;
+
+            while (t && find) {      // ищем место под узел: пока рабочий указатель не нулевой (то есть не на последнем уровне), спускаемся на уровень ниже
+                prev = t;           
+                if (eng_inp == t->get_eng())
+                {
+                    for (int i = 0; i < t->get_rus_multiple().size(); i++)
+                    {
+                        if (rus_inp == t->get_rus_multiple()[i])
+                        {
+                            find = false;
+                        }
+                    }
+                    if (find)
+                    {
+                        t->add_to_rus_multiple(rus_inp);
+                    }
+                }
+                if (eng_inp < t->get_eng()) {
+                    t = t->get_left();
+                    continue;
+                }
+                if (eng_inp > t->get_eng())
+                    t = t->get_right();
+            }
+            if (find) {       //если нет дубликата
+                cNode* new_node = new cNode(eng_inp, rus_inp);
+                t = new_node;
+                if (eng_inp < prev->get_eng())
+                    prev->set_left(t);
+                else
+                    prev->set_right(t);
+            }
+        }
+    }
+
+    string& dict::find_node(cNode* t, string eng_inp, int index)
+    {
+        if (!t)
+            return root->nullpointer(); //если элемента не существует, возвращаем nullpointer
+        if (eng_inp == t->get_eng())
+        {
+            if (t->get_rus_multiple().size() <= index) return root->nullpointer(); //если мы выходим за пределы вектора, тоже возвращаем nullpointer
+            return t->get_rus_m_element()[index];
+        }
+
+        if (eng_inp < t->get_eng())
+            return find_node(t->get_left(), eng_inp, index);
+        if (eng_inp > t->get_eng())
+            return find_node(t->get_right(), eng_inp, index);
+    }
+
+    void dict::delete_tr(cNode* t, string eng_inp, int index)
+    {
+        if (!t)
+            return;
+        if (eng_inp == t->get_eng())
+        {
+            if (t->get_rus_multiple().size() < index) return;
+            t->delete_from_rus_multiple(index - 1);
+        }
+
+        if (eng_inp < t->get_eng())
+            delete_tr(t->get_left(), eng_inp, index);
+        if (eng_inp > t->get_eng())
+            delete_tr(t->get_right(), eng_inp, index);
+    }
+
+    cNode* dict::delete_node(cNode* node, string eng_inp)   
+    {
+        bool trying_to_delete_root = false;
+        if (!node)
+            return node;
+        if (node == root)
+            trying_to_delete_root = true;
+        if (eng_inp == node->get_eng()) {
+            cNode* tmp;
+            if (!node->get_right())
+                tmp = node->get_left();
+            else {
+                cNode* p = node->get_right();
+                if (!p->get_left()) {
+                    p->set_left(node->get_left());
+                    tmp = p;
+                }
+                else {
+                    cNode* pmin = p->get_left();
+                    while (pmin->get_left()) {
+                        p = pmin;
+                        pmin = p->get_left();
+                    }
+                    p->set_left(pmin->get_right());
+                    pmin->set_left(node->get_left());
+                    pmin->set_right(node->get_right());
+                    tmp = pmin;
+                }
+            }
+            delete node;
+            if (trying_to_delete_root)
+                root = tmp;
+            return tmp;
+        }
+        else if (eng_inp < node->get_eng())
+            node->set_left(delete_node(node->get_left(), eng_inp));
+        else
+            node->set_right(delete_node(node->get_right(), eng_inp));
+        return node;
+    }
+
+    int dict::count_nodes(cNode* node) {
+        int count = 0;
+        if (node) {
+            count++;
+            if (node->get_left())
+                count += count_nodes(node->get_left());
+            if (node->get_right())
+                count += count_nodes(node->get_right());
+        }
+        return count;
+    }
+
+    void dict::set_translation(string eng_inp, string rus_inp) {
+        add_node(root, eng_inp, rus_inp);
+    }
+
+    void dict::remove_translation(string eng_inp) {
+        delete_node(root, eng_inp);
+    } //удаляет сам узел слова со всеми элементами
+
+    int dict::length() {
+        return count_nodes(root);
+    }
+
+    int dict::tr_count(string eng_inp) {
+        int i = 0;
+        while (true)
+        {
+            if (find_node(root, eng_inp, i) == "Элемент не найден") {
+                break;
+            }
+            i++;
+        }
+        return i;
+    }
+
+    void dict::delete_one_translation(string eng_inp, int index) {
+        delete_tr(root, eng_inp, index);
+    } //удаляет ОДИН перевод
+
+        // Перегрузка операторов
+    string dict::operator[] (string eng_inp) {
+        string output = "";
+        for (int i = 0; i < tr_count(eng_inp); i++)
+        {
+            output += find_node(root, eng_inp, i) + " ";
+        }
+        return output;
+    }
+    string& dict::operator[] (pair<string, int> transl) {
+        return find_node(root, transl.first, transl.second);
+    }
+    void dict::operator-= (string eng_inp) {
+        this->remove_translation(eng_inp);
+    }
+    void dict::operator+= (pair<string, string> eng_inp) {
+        this->set_translation(eng_inp.first, eng_inp.second);
+    }
