@@ -7,16 +7,16 @@ using namespace std;
 
 class cNode 
 {
-    cNode* left, * right;       /// указатели на потомков
-    string eng, nullpoint = "Элемент не найден";
-    vector<string> rus_multiple; ///вектор возможных переводов английского слова
+    cNode* left, * right;       /// pointers to the children
+    string eng, nullpoint = "Element not found";
+    vector<string> rus_multiple; ///vector of possible russian translations
 
 public:
     cNode(string eng_inp, string rus_inp) {       
         eng = eng_inp;
         rus_multiple.push_back(rus_inp);
         left = right = nullptr;
-    } /// конструктор
+    } /// constructor
 
     string get_eng() {
         return eng;
@@ -32,7 +32,7 @@ public:
 
     string& nullpointer() {
         return nullpoint;
-    }       /// вспомогательный элемент, именно его адрес мы возвращаем в функции find_node()
+    }       /// utility element, we return its address to the find_node() function
 
     cNode* get_left() {
         return left;
@@ -63,38 +63,38 @@ public:
     }
 
     bool operator== (cNode comp);
-}; ///класс узла бинарного дерева с геттерами и сеттерами
+}; ///just a binary tree node class with getters and setters
 
 
 
-class dict      /// класс бинарного дерева
+class dict      /// binary tree class
 {
 private:
     cNode* root;
-    void add_node(cNode* node, string eng_inp, string rus_inp); ///рекурсивно встраивает новое английское слово и его переводы в дерево
+    void add_node(cNode* node, string eng_inp, string rus_inp); ///recursively inserts a new english word with the translations into the tree
 
-    string& find_node(cNode* t, string eng_inp, int index); ///ищет и возвращает элемент - один конкретный перевод
+    string& find_node(cNode* t, string eng_inp, int index); /// finds and returns one particular translation of an element
 
-    void delete_tr(cNode* t, string eng_inp, int index); ///рекурсивно удаляет один из переводов
+    void delete_tr(cNode* t, string eng_inp, int index); ///recursively deletes one of the translations
 
-    cNode* delete_node(cNode* node, string eng_inp); ///рекурсивно удаляет сам элемент (английское слово и все его переводы)
+    cNode* delete_node(cNode* node, string eng_inp); ///recursively deletes one elements and all it contains
 
-    int count_nodes(cNode* node); ///считает количество английских слов в словаре
+    int count_nodes(cNode* node); /// counts the amount of english words in the dictionary
 
 public:
-    void set_translation(string eng_inp, string rus_inp); ///добавляет новое английское слово и его переводы
+    void set_translation(string eng_inp, string rus_inp); ///adds a new english word and its translations
 
-    void remove_translation(string eng_inp); ///удаляет элемент дерева
+    void remove_translation(string eng_inp); ///удаляет элемент дерева deletes an element (word) of a dictionary
 
-    int length(); ///возвращает количество слов
+    int length(); ///returns the amount of words
 
-    int tr_count(string eng_inp); ///возвращает количество русских переводов конкретного английского слова
+    int tr_count(string eng_inp); ///return the amount of russian translations of a particular english word 
 
-    void delete_one_translation(string eng_inp, int index); ///удаляет один из переводов
+    void delete_one_translation(string eng_inp, int index); ///deletes one of the translations
 
-    // Перегрузка операторов
-    string operator[] (string eng_inp); ///перегруженный оператор для получения перевода
-    string& operator[] (pair<string, int> transl); ///перегруженный оператор для ИЗМЕНЕНИЯ перевода (в паре английское слово и номер перевода, который нужно изменить)
-    void operator-= (string eng_inp); ///перегруженный оператор для удаления слова
-    void operator+= (pair<string, string> eng_inp); ///перегруженный оператор для добавления слова и одного его перевода
+    // overloading operators 
+    string operator[] (string eng_inp); ///overloaded operator to get translations
+    string& operator[] (pair<string, int> transl); ///overloaded operator to CHANGE the translation (there is an english word and the number of the translation that needs to be changed) 
+    void operator-= (string eng_inp); ///overloaded operator of deleting the word
+    void operator+= (pair<string, string> eng_inp); ///overloaded operator of adding a word and one translation to this word
 };
