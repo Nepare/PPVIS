@@ -1,195 +1,184 @@
-﻿#include <iostream>
+﻿#include <fstream>
+#include <Windows.h>
 #include <string>
-#include "Header1.h"
+#include "dict_class.h"
+
 
 using namespace std;
 
-class cNode //класс узла
-{
-    cNode* left, * right; //указатели на потомков
-    string eng, rus, nullpoint = "Элемент не найден"; 
+//! interface :)
+int main() {
+    SetConsoleCP(1251);
+    SetConsoleOutputCP(1251);
 
-public:
-    cNode(string eng1, string rus1) //конструктор
-    {
-        eng = eng1;
-        rus = rus1;
-        left = right = nullptr;
-    }
-
-    string get_eng()
-    {
-        return eng;
-    }
-    string get_rus()
-    {
-        return rus;
-    }
-    string& get_rus_element()
-    {
-        return rus;
-    }
-    string& nullpointer()
-    {
-        return nullpoint;
-    } //вспомогательный элемент, именно его адрес мы возвращаем в функции find_node()
-    cNode* get_left()
-    {
-        return left;
-    }
-    cNode* get_right()
-    {
-        return right;
-    }
-
-    void set_eng(string eng1)
-    {
-        this->eng = eng1;
-    }
-    void set_rus(string rus1)
-    {
-        rus = rus1;
-    }
-    void set_left(cNode* left1)
-    {
-        left = left1;
-    }
-    void set_right(cNode* right1)
-    {
-        right = right1;
-    }
-} *root;
-
-class dict //класс самого бинарного дерева
-{
-private:
-    void add_node(cNode *node, string eng1, string rus1)
-    {
-        if (root == NULL)
-        {
-            cNode* t = new cNode(eng1, rus1);
-            root = t; 
-        } //если корневой элемент не создан, то мы выделяем под него память и привязываем к нему указатель корня root
-        else 
-        {
-            cNode* prev, * t;
-            bool find = true; //find - это проверка на то, что в дереве ещё нету такого элемента
-            t = node; prev = t;
-
-            while (t != nullptr && find) //ищем место под узел: пока рабочий указатель не нулевой (то есть не на последнем уровне), спускаемся на уровень ниже
-            {
-                prev = t;
-                if (eng1 == t->get_eng())
-                {
-                    find = false;
-                }
-                if (eng1 < t->get_eng()) { t = t->get_left(); continue; }
-                if (eng1 > t->get_eng()) { t = t->get_right(); }
-            }
-            if (find) //если нет дубликата
-            {
-                cNode* new_node = new cNode(eng1, rus1);
-                t = new_node;
-                if (eng1 < prev->get_eng()) prev->set_left(t);
-                else prev->set_right(t);
-            }
+    dict* slov = new dict();
+    int choice = 1;
+    while (choice) {
+        system("cls");
+        cout << "Выберите действие:\n"; 
+        cout << "1. Добавить слово (или перевод к существующему слову)\n"; 
+        cout << "2. Удалить слово\n";
+        cout << "3. Удалить перевод из слова\n";
+        cout << "4. Поиск перевода английского слова\n";            
+        cout << "5. Замена перевода английского слова\n"; 
+        cout << "6. Количество слов в словаре\n";
+        cout << "7. Загрузить словарь из файла\n";
+        cout << "0. Выход.\n";
+        cout << "Введите действие: ";
+        cin >> choice;
+        if (!choice) {
+            system("cls");
+            break;
         }
-    }
-    string& find_node(cNode* t, string eng1)
-    {
-        if (t == nullptr) { return root->nullpointer(); }
-        if (eng1 == t->get_eng()) return t->get_rus_element();
-        if (eng1 < t->get_eng()) return find_node(t->get_left(), eng1);
-        if (eng1 > t->get_eng()) return find_node(t->get_right(), eng1);
-    }
-    cNode* delete_node(cNode* node, string eng1)
-    {
-        bool trying_to_delete_root = false;
-        if (node == NULL) return node;
-        if (node == root) trying_to_delete_root = true;
+        int choice_case = 1;
+        switch (choice) {
+        case 1:
+            while (choice_case) {
+                system("cls");
+                string eng_word, rus_word;
+                cout << "Введите английское слово: ";
+                cin >> eng_word;
 
-        if (eng1 == node->get_eng())
-        {
-            cNode* tmp;
-            if (node->get_right() == NULL)
-                tmp = node->get_left();
-            else
-            {
-                cNode* p = node->get_right();
-                if (p->get_left() == NULL)
+                int translation_count = 1;
+                cout << "Сколько переводов для этого слова вы хотите: ";
+                cin >> translation_count;
+                for (int i = 0; i < translation_count; i++)
                 {
-                    p->set_left(node->get_left());
-                    tmp = p;
+                    cout << "Введите " << i+1 << "-й перевод на русском: ";
+                    cin >> rus_word;
+                    *slov += make_pair(eng_word, rus_word);
+                }
+                cout << "Желаете ли вы добавить еще? (1 - да, 0 - нет) ";
+                cin >> choice_case;
+            }
+            break;
+
+        case 2:
+            while (choice_case) {
+                system("cls");
+                string del_word;
+                cout << "Введите слово, которое вы желаете удалить: ";
+                cin >> del_word;
+                *slov -= del_word;
+                cout << "Желаете ли вы удалить еще? (1 - да, 0 - нет) ";
+                cin >> choice_case;
+            }
+            break;
+
+        case 3:
+            while (choice_case) {
+                system("cls");
+                string del_tr;
+                cout << "Введите слово, перевод которого вы желаете удалить: ";
+                cin >> del_tr;
+                cout << "Переводы: \n";
+                for (int i = 0; i < slov->tr_count(del_tr); i++)
+                {
+                    cout << i + 1 << ". " << (*slov)[make_pair(del_tr, i)] << endl;
+                }
+                cout << "Перевод под каким номером вы хотите удалить: ";
+                int tr_numb;
+                cin >> tr_numb;
+
+                slov->delete_one_translation(del_tr, tr_numb);
+
+                cout << "Желаете ли вы удалить перевод еще? (1 - да, 0 - нет) ";
+                cin >> choice_case;
+            }
+            break;
+
+        case 4:
+            while (choice_case) {
+                system("cls");
+                string tr_word;
+                cout << "Введите слово, которое вы хотите перевести: ";
+                cin >> tr_word;
+                cout << "Перевод: " << (*slov)[tr_word] << endl;
+                cout << "Желаете ли вы перевести еще? (1 - да, 0 - нет) ";
+                cin >> choice_case;
+            }
+            break;
+
+        case 5:
+            while (choice_case) {
+                system("cls");
+                string change_word, new_word;
+                cout << "Введите слово, перевод которого нужно изменить: ";
+                cin >> change_word;
+
+                if (slov->tr_count(change_word) == 1)
+                {
+                    cout << "Текущий перевод: " << (*slov)[change_word] << "\nВведите новый перевод: ";
+                    cin >> new_word;
+                    (*slov)[make_pair(change_word, 0)] = new_word;
+                }
+                else {
+                    cout << "Переводы: \n";
+                    for (int i = 0; i < slov->tr_count(change_word); i++)
+                    {
+                        cout << i + 1 << ". " << (*slov)[make_pair(change_word, i)] << endl;
+                    }
+                    cout << "Перевод под каким номером вы хотите изменить: ";
+                    int tr_numb;
+                    cin >> tr_numb;
+                    cout << "Введите новый перевод: ";
+                    cin >> new_word;
+                    (*slov)[make_pair(change_word, tr_numb - 1)] = new_word;
+
+                }
+                cout << "Желаете ли вы изменить еще? (1 - да, 0 - нет) ";
+                cin >> choice_case;
+            }
+            break;
+
+        case 6:
+            while (choice_case) {
+                system("cls");
+                string del_word;
+                cout << "В словаре: " << (*slov).length() << " слова." << endl;
+                cout << "Введите \"0\" для продолжения: ";
+                cin >> choice_case;
+            }
+            break;
+
+        case 7:
+            while (choice_case) {
+                system("cls");
+                string file_name = "dictionary.txt";
+                /*cout << "Введите имя файла: ";
+                cin >> file_name;*/
+                ifstream inp_file;
+                inp_file.open(file_name);
+                if (inp_file.is_open()) {
+                    string inp_line;
+                    while (!inp_file.eof()) {
+                        getline(inp_file, inp_line);
+                        string inp_eng = inp_line.substr(0, inp_line.find('\t'));
+                        string inp_rus = inp_line.substr(inp_line.find('\t') + 1);
+                        int space_index = 0;
+                        string rus_tr;
+                        for (int i = 0; i < inp_rus.length(); i++) ///разбиваем вторую часть строки на разные переводы
+                        {
+                            if (inp_rus[i] == ' ')
+                            {
+                                rus_tr = inp_rus.substr(space_index, i - space_index);
+                                *slov += make_pair(inp_eng, rus_tr);
+                                space_index = i+1;
+                            }
+                        }
+                        rus_tr = inp_rus.substr(space_index, inp_rus.length());
+                        *slov += make_pair(inp_eng, rus_tr);
+                    }
+                    inp_file.close();
+                    cout << "Словарь из файла успешно загружен!" << endl;
                 }
                 else
-                {
-                    cNode* pmin = p->get_left();
-                    while (pmin->get_left() != NULL)
-                    {
-                        p = pmin;
-                        pmin = p->get_left();
-                    }
-                    p->set_left(pmin->get_right());
-                    pmin->set_left(node->get_left()); 
-                    pmin->set_right(node->get_right());
-                    tmp = pmin;
-                }
+                    cout << "Файл не открыт!" << endl;
+                cout << "Введите \"0\" для продолжения: ";
+                cin >> choice_case;
             }
-            delete node;
-            if (trying_to_delete_root) root = tmp;
-            return tmp;
-        }
-        else if (eng1 < node->get_eng())
-            node->set_left(delete_node(node->get_left(), eng1));
-        else
-            node->set_right(delete_node(node->get_right(), eng1));
-        return node;
-    }
-
-public:
-    void set_translation(string e1, string r1)
-    {
-        add_node(root, e1, r1);
-    }
-    void get_translation(string e1)
-    {
-        if (find_node(root, e1) == "0") cout << "Элемент не найден";
-        else 
-        {
-            string r1 = find_node(root, e1);
-            cout << e1 << ":" << r1 << endl;
+            break;
         }
     }
-    void remove_translation(string e1)
-    {
-        delete_node(root, e1);
-    }
-    void test_root()
-    {
-        cout << root->get_eng() << " " << root->get_rus();
-    }
-
-    string& operator[] (string e1)  { return find_node(root, e1); }
-    void operator-= (string e1) { this->remove_translation(e1); }
-    void operator+= (pair<string,string> e1) { this->set_translation(e1.first,e1.second); }
-};
-
-
-int main()
-{
-    setlocale(LC_ALL, "ru");
-    dict *slov = new dict();
-
-    (*slov) += make_pair("hello","привет");
-    (*slov) += make_pair("hi", "добро пожаловать");
-    (*slov) += make_pair("bread", "хлеб");
-
-    cout << (*slov)["hello"] << endl;
-    cout << (*slov)["hi"] << endl;
-    (*slov)["hi"] = "шарнир";
-    cout << (*slov)["hi"] << endl;
-    (*slov) -= "hi";
-    cout << (*slov)["hi"] << endl;
-    //slov->test();
 
 }
