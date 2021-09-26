@@ -161,7 +161,7 @@ using namespace std;
         int i = 0;
         while (true)
         {
-            if (find_node(root, eng_inp, i) == "Элемент не найден") {
+            if (find_node(root, eng_inp, i) == "Element not found") {
                 break;
             }
             i++;
