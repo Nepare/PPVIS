@@ -6,7 +6,7 @@
 
 using namespace std;
 
-
+//! interface :)
 int main() {
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
@@ -157,7 +157,7 @@ int main() {
                         string inp_rus = inp_line.substr(inp_line.find('\t') + 1);
                         int space_index = 0;
                         string rus_tr;
-                        for (int i = 0; i < inp_rus.length(); i++) //разбиваем вторую часть строки на разные переводы
+                        for (int i = 0; i < inp_rus.length(); i++) ///разбиваем вторую часть строки на разные переводы
                         {
                             if (inp_rus[i] == ' ')
                             {
