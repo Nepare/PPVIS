@@ -14,19 +14,19 @@ using namespace std;
         }
         else return false;
         return true;
-    } ///оператор сравнения
+    } ///РѕРїРµСЂР°С‚РѕСЂ СЃСЂР°РІРЅРµРЅРёСЏ
 
     void dict::add_node(cNode* node, string eng_inp, string rus_inp) {
         if (!root) {
             cNode* t = new cNode(eng_inp, rus_inp);
-            root = t;       /// если корневой элемент не создан, то мы выделяем под него память и привязываем к нему указатель корня root
+            root = t;       /// РµСЃР»Рё РєРѕСЂРЅРµРІРѕР№ СЌР»РµРјРµРЅС‚ РЅРµ СЃРѕР·РґР°РЅ, С‚Рѕ РјС‹ РІС‹РґРµР»СЏРµРј РїРѕРґ РЅРµРіРѕ РїР°РјСЏС‚СЊ Рё РїСЂРёРІСЏР·С‹РІР°РµРј Рє РЅРµРјСѓ СѓРєР°Р·Р°С‚РµР»СЊ РєРѕСЂРЅСЏ root
         }               
         else {
             cNode* prev, * t;
-            bool find = true;       /// find - это проверка на то, что в дереве ещё нет такого элемента
+            bool find = true;       /// find - СЌС‚Рѕ РїСЂРѕРІРµСЂРєР° РЅР° С‚Рѕ, С‡С‚Рѕ РІ РґРµСЂРµРІРµ РµС‰С‘ РЅРµС‚ С‚Р°РєРѕРіРѕ СЌР»РµРјРµРЅС‚Р°
             t = node; prev = t;
 
-            while (t && find) {      /// ищем место под узел: пока рабочий указатель не нулевой (то есть не на последнем уровне), спускаемся на уровень ниже
+            while (t && find) {      /// РёС‰РµРј РјРµСЃС‚Рѕ РїРѕРґ СѓР·РµР»: РїРѕРєР° СЂР°Р±РѕС‡РёР№ СѓРєР°Р·Р°С‚РµР»СЊ РЅРµ РЅСѓР»РµРІРѕР№ (С‚Рѕ РµСЃС‚СЊ РЅРµ РЅР° РїРѕСЃР»РµРґРЅРµРј СѓСЂРѕРІРЅРµ), СЃРїСѓСЃРєР°РµРјСЃСЏ РЅР° СѓСЂРѕРІРµРЅСЊ РЅРёР¶Рµ
                 prev = t;           
                 if (eng_inp == t->get_eng())
                 {
@@ -49,7 +49,7 @@ using namespace std;
                 if (eng_inp > t->get_eng())
                     t = t->get_right();
             }
-            if (find) {       ///если нет дубликата
+            if (find) {       ///РµСЃР»Рё РЅРµС‚ РґСѓР±Р»РёРєР°С‚Р°
                 cNode* new_node = new cNode(eng_inp, rus_inp);
                 t = new_node;
                 if (eng_inp < prev->get_eng())
@@ -63,10 +63,10 @@ using namespace std;
     string& dict::find_node(cNode* t, string eng_inp, int index)
     {
         if (!t)
-            return root->nullpointer(); ///если элемента не существует, возвращаем nullpointer
+            return root->nullpointer(); ///РµСЃР»Рё СЌР»РµРјРµРЅС‚Р° РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚, РІРѕР·РІСЂР°С‰Р°РµРј nullpointer
         if (eng_inp == t->get_eng())
         {
-            if (t->get_rus_multiple().size() <= index) return root->nullpointer(); ///если мы выходим за пределы вектора, тоже возвращаем nullpointer
+            if (t->get_rus_multiple().size() <= index) return root->nullpointer(); ///РµСЃР»Рё РјС‹ РІС‹С…РѕРґРёРј Р·Р° РїСЂРµРґРµР»С‹ РІРµРєС‚РѕСЂР°, С‚РѕР¶Рµ РІРѕР·РІСЂР°С‰Р°РµРј nullpointer
             return t->get_rus_m_element()[index];
         }
 
@@ -151,7 +151,7 @@ using namespace std;
 
     void dict::remove_translation(string eng_inp) {
         delete_node(root, eng_inp);
-    } ///удаляет сам узел слова со всеми элементами
+    } ///СѓРґР°Р»СЏРµС‚ СЃР°Рј СѓР·РµР» СЃР»РѕРІР° СЃРѕ РІСЃРµРјРё СЌР»РµРјРµРЅС‚Р°РјРё
 
     int dict::length() {
         return count_nodes(root);
@@ -161,7 +161,7 @@ using namespace std;
         int i = 0;
         while (true)
         {
-            if (find_node(root, eng_inp, i) == "Элемент не найден") {
+            if (find_node(root, eng_inp, i) == "Р­Р»РµРјРµРЅС‚ РЅРµ РЅР°Р№РґРµРЅ") {
                 break;
             }
             i++;
@@ -171,9 +171,9 @@ using namespace std;
 
     void dict::delete_one_translation(string eng_inp, int index) {
         delete_tr(root, eng_inp, index);
-    } ///удаляет ОДИН перевод
+    } ///СѓРґР°Р»СЏРµС‚ РћР”РРќ РїРµСЂРµРІРѕРґ
 
-        /// Перегрузка операторов
+        /// РџРµСЂРµРіСЂСѓР·РєР° РѕРїРµСЂР°С‚РѕСЂРѕРІ
     string dict::operator[] (string eng_inp) {
         string output = "";
         for (int i = 0; i < tr_count(eng_inp); i++)
