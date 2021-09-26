@@ -14,19 +14,19 @@ using namespace std;
         }
         else return false;
         return true;
-    } ///оператор сравнения
+    } ///comparison operator
 
     void dict::add_node(cNode* node, string eng_inp, string rus_inp) {
         if (!root) {
             cNode* t = new cNode(eng_inp, rus_inp);
-            root = t;       /// если корневой элемент не создан, то мы выделяем под него память и привязываем к нему указатель корня root
+            root = t;       /// if the root elements doesn't exist, we allocate memory to it and connect it to the 'root' pointer
         }               
         else {
             cNode* prev, * t;
-            bool find = true;       /// find - это проверка на то, что в дереве ещё нет такого элемента
+            bool find = true;       /// find is a check if there is no dublicate english name of this element in the tree
             t = node; prev = t;
 
-            while (t && find) {      /// ищем место под узел: пока рабочий указатель не нулевой (то есть не на последнем уровне), спускаемся на уровень ниже
+            while (t && find) {      /// looking for the place for this node: when the 't' pointer isn't nullpointer (it's not on the bottom level), we go down a level
                 prev = t;           
                 if (eng_inp == t->get_eng())
                 {
@@ -49,7 +49,7 @@ using namespace std;
                 if (eng_inp > t->get_eng())
                     t = t->get_right();
             }
-            if (find) {       ///если нет дубликата
+            if (find) {       ///if there is no dublicate
                 cNode* new_node = new cNode(eng_inp, rus_inp);
                 t = new_node;
                 if (eng_inp < prev->get_eng())
@@ -63,10 +63,10 @@ using namespace std;
     string& dict::find_node(cNode* t, string eng_inp, int index)
     {
         if (!t)
-            return root->nullpointer(); ///если элемента не существует, возвращаем nullpointer
+            return root->nullpointer(); ///if this element doesn't exist, we return nullpointer
         if (eng_inp == t->get_eng())
         {
-            if (t->get_rus_multiple().size() <= index) return root->nullpointer(); ///если мы выходим за пределы вектора, тоже возвращаем nullpointer
+            if (t->get_rus_multiple().size() <= index) return root->nullpointer(); ///if we go out of range of the vector, return nullpointer
             return t->get_rus_m_element()[index];
         }
 
@@ -151,7 +151,7 @@ using namespace std;
 
     void dict::remove_translation(string eng_inp) {
         delete_node(root, eng_inp);
-    } ///удаляет сам узел слова со всеми элементами
+    } ///deletes the node and all the elements within
 
     int dict::length() {
         return count_nodes(root);
@@ -171,9 +171,9 @@ using namespace std;
 
     void dict::delete_one_translation(string eng_inp, int index) {
         delete_tr(root, eng_inp, index);
-    } ///удаляет ОДИН перевод
+    } ///deletes ONE translation
 
-        /// Перегрузка операторов
+        /// overloading operators
     string dict::operator[] (string eng_inp) {
         string output = "";
         for (int i = 0; i < tr_count(eng_inp); i++)
